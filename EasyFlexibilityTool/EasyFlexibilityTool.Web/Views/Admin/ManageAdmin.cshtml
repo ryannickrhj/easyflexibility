@@ -1,0 +1,216 @@
+﻿@using EasyFlexibilityTool.Web.Models
+
+@{
+    ViewBag.Title = "ManageAdmin";
+}
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<style>
+    .page-header {
+        margin: 0;
+    }
+    .page-content {
+        padding: 0 100px 0 100px;
+    }
+    .page-title {
+        text-align: center;
+        font-size: 32px;
+        color: green;
+        border-radius: 4px;
+        border-style: solid;
+        border-width: 1px 1px 3px 1px;
+        border-color: darkseagreen;
+        margin-bottom: 30px;
+    }
+    .h2 {
+        text-transform: none;
+    }
+    .div-inline {
+        height: 30px;
+        margin-bottom: 10px;
+    }
+    .div-inline div {
+        float: left;
+        height: 30px;
+        margin-right: 10px;
+    }
+    #sort_button {
+        margin-right: 100px;
+    }
+    .alert-danger {
+        margin: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 20px;
+    }
+</style>
+@if (ViewBag.UserRole == "SuperAdmin")
+{
+    <div class="super-admin-only" style="padding:20px;">
+        <p class="page-title">Admin Management</p>
+
+        <div class="div-inline">
+            <div>
+                <label for="sorting_field" style="line-height:30px;">SortingField</label>
+            </div>
+            <div>
+                <select class="form-control" id="sorting_field" style="width:200px;">
+                    <option value="@Html.IdFor(m => new LeaderboardItemModel().IsAdmin)">Admin</option>
+                    <option value="@Html.IdFor(m => new LeaderboardItemModel().UserName)">User Name</option>
+                    <option value="@Html.IdFor(m => new LeaderboardItemModel().Email)">Email</option>
+                </select>
+            </div>
+            <div>
+                <button class="btn btn-primary" id="sort_button">Sort</button>
+            </div>
+
+            <div>
+                <label for="search_email" style="line-height:30px;">Search Email</label>
+            </div>
+            <div>
+                <input type="text" class="form-control" id="search_email" />
+            </div>
+            <div>
+                <button class="btn btn-primary" id="search_button">Search</button>
+            </div>
+        </div>
+
+        <div>
+            <div id="user_grid"></div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert-danger">
+        You can't access to this page. Only SuperAdmin can access.
+    </div>
+}
+
+<div id="modal_photo" style="display:none;">
+    <img id="img_modal_photo" />
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        $("#sort_button").click(function () {
+            $("#user_grid").jsGrid("sort", $("#sorting_field").val());
+        });
+
+        $("#search_button").click(function () {
+            var searchingEmail = $("#search_email").val();
+            $("#user_grid").jsGrid("loadData", { Email: searchingEmail });
+        });
+
+        $(function () {
+            $('#user_grid').jsGrid({
+                width: '100%',
+                autoload: true,
+                paging: true,
+                pageSize: 20,
+                pageButtonCount: 10,
+
+                controller: {
+                    loadData: function (filter) {
+                        var deferred = $.Deferred();
+                        $.get({
+                            url: '/api/admin/getadminlist',
+                            data: filter,
+                            dataType: 'json'
+                        }).done(function (result) {
+                            if (filter.Email != undefined) {
+                                result = $.grep(result, function (item) {
+                                    return item.Email.includes(filter.Email);
+                                });
+                            }
+                            deferred.resolve(result);
+                        });
+                        return deferred.promise();
+                    }
+                },
+
+                fields: [
+                    {
+                        name: 'Position',
+                        title: '#',
+                        type: 'number',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 20,
+                        itemTemplate: function(value, model) {
+                            return '<span>' + (this._grid.data.indexOf(model) + 1) + '</span>';
+                        }
+                    }, {
+                        name: "@Html.IdFor(m=>new LeaderboardItemModel().IsAdmin)",
+                        title: "Admin",
+                        type: "checkbox",
+                        align: "center",
+                        css: "vertical-middle",
+                        width: 50,
+                        itemTemplate: function (value, model) {
+                            return $("<button/>", {
+                                html: "<span class='glyphicon glyphicon-ok'/>",
+                                css: {
+                                    color: model.IsAdmin ? "red" : "lightgray"
+                                },
+                                click: function () {
+                                    var thiss = $(this);
+                                    swal({
+                                        type: "info",
+                                        title: "Are you sure to change Admin?",
+                                        text: "",
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#5CB85C",
+                                        confirmButtonText: "Yes",
+                                        cancelButtonText: "No",
+                                        closeOnConfirm: false
+                                    }, function (isConfirm) {
+                                        if (isConfirm) {
+                                            $.ajax({
+                                                url: "/api/admin/updateuserrole?userId=" + model.UserId + "&role=" + (model.IsAdmin ? "User" : "Admin"),
+                                                type: "POST"
+                                            }).done(function (data) {
+                                                if (data) {
+                                                    model.IsAdmin = !model.IsAdmin;
+                                                    thiss.css("color", model.IsAdmin ? "red" : "lightgray");
+                                                    swal("Changed Successfully");
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().UserName)',
+                        title: '@Html.DisplayNameFor(m => new LeaderboardItemModel().UserName)',
+                        type: 'text',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 150,
+                        itemTemplate: function (value, model) {
+                            return "<span style='word-wrap: break-word;'>" + value + "</span>";
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().Email)',
+                        title: '@Html.DisplayNameFor(m => new LeaderboardItemModel().Email)',
+                        type: 'text',
+                        autosearch: true,
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 150,
+                        itemTemplate: function (value, model) {
+                            return "<span style='word-wrap: break-word;'>" + value + "</span>";
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}

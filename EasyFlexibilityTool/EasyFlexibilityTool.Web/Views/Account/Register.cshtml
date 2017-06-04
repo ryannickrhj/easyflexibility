@@ -1,0 +1,103 @@
+﻿@model EasyFlexibilityTool.Web.ViewModels.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+}
+
+<style>
+    .program-list-container label {
+        height: 10px;
+    }
+</style>
+
+<section class="well-xs">
+    <div class="container relative">
+        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "rd-mailform wow fadeInUp", style = "visibility: visible; animation-name: fadeInUp;" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "")
+
+            <fieldset>
+                @if (ViewBag.Message == null)
+                {
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h2 class="relative text-center text-md-left wow fadeInLeft" style="visibility: visible; animation-name: fadeInLeft;">
+                                @ViewBag.Title
+                                <span class="devider devider-md devider-default devider-position-left devider-position-center-sm devider-position-bottom"></span>
+                            </h2>
+                            <br/>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.EditorFor(m => m.Email, new { htmlAttributes = new { placeholder = Html.DisplayNameFor(m => m.Email) } })
+                                @Html.ValidationMessageFor(m => m.Email)
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.EditorFor(m => m.Password, new { htmlAttributes = new { placeholder = Html.DisplayNameFor(m => m.Password) } })
+                                @Html.ValidationMessageFor(m => m.Password)
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.EditorFor(m => m.ConfirmPassword, new { htmlAttributes = new { placeholder = Html.DisplayNameFor(m => m.ConfirmPassword) } })
+                                @Html.ValidationMessageFor(m => m.ConfirmPassword)
+                            </label>
+                        </div>
+                        <div class="col-md-6 program-list-container">
+                            <h5>Please select all programs that you are using now</h5>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.CheckBoxFor(m => m.SideSplitsBeginner)
+                                <span class="mfPlaceHolder checkbox">@Html.DisplayNameFor(m => m.SideSplitsBeginner)</span>
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.CheckBoxFor(m => m.SideSplitsIntermediate)
+                                <span class="mfPlaceHolder checkbox">@Html.DisplayNameFor(m => m.SideSplitsIntermediate)</span>
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.CheckBoxFor(m => m.SideSplitsAdvanced)
+                                <span class="mfPlaceHolder checkbox">@Html.DisplayNameFor(m => m.SideSplitsAdvanced)</span>
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.CheckBoxFor(m => m.TrueFrontSplitsBeginner)
+                                <span class="mfPlaceHolder checkbox">@Html.DisplayNameFor(m => m.TrueFrontSplitsBeginner)</span>
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.CheckBoxFor(m => m.TrueFrontSplitsIntermediate)
+                                <span class="mfPlaceHolder checkbox">@Html.DisplayNameFor(m => m.TrueFrontSplitsIntermediate)</span>
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.CheckBoxFor(m => m.TrueFrontSplitsAdvanced)
+                                <span class="mfPlaceHolder checkbox">@Html.DisplayNameFor(m => m.TrueFrontSplitsAdvanced)</span>
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.CheckBoxFor(m => m.OpenFrontSplitsBeginner)
+                                <span class="mfPlaceHolder checkbox">@Html.DisplayNameFor(m => m.OpenFrontSplitsBeginner)</span>
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.CheckBoxFor(m => m.OpenFrontSplitsIntermediate)
+                                <span class="mfPlaceHolder checkbox">@Html.DisplayNameFor(m => m.OpenFrontSplitsIntermediate)</span>
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.CheckBoxFor(m => m.OpenFrontSplitsAdvanced)
+                                <span class="mfPlaceHolder checkbox">@Html.DisplayNameFor(m => m.OpenFrontSplitsAdvanced)</span>
+                            </label>
+                            <label data-add-placeholder="" class="mfInput">
+                                @Html.EditorFor(m => m.Other, new { htmlAttributes = new { placeholder = Html.DisplayNameFor(m => m.Other) } })
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mfControls">
+                        <button class="link link-primary" type="submit">Register</button>
+                    </div>
+                }
+                else
+                {
+                    <p>
+                        @ViewBag.Message
+                    </p>
+                }
+            </fieldset>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
