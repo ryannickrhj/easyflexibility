@@ -473,8 +473,6 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
-    <None Include="Properties\PublishProfiles\EasyFlexibility - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\EasyFlexibilityStag - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-3.1.0.intellisense.js">
       <DependentUpon>jquery-3.1.0.js</DependentUpon>
     </None>
@@ -598,7 +596,9 @@
     <Content Include="Views\Admin\EmailTemplate.cshtml" />
     <Content Include="Views\Admin\ManageAdmin.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
